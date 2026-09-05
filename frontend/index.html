@@ -3,136 +3,1450 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>RecoverIQ — Revenue Recovery Intelligence</title>
 
-    <link rel="stylesheet" href="style.css">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Arial, sans-serif;
+            background: #070b14;
+            color: #e8edf7;
+            min-height: 100vh;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* =========================
+           APP LAYOUT
+        ========================= */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            background: #080d17;
+            border-right: 1px solid #1b2536;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 25px 16px;
+
+            z-index: 100;
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 8px 10px 28px;
+        }
+
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+            font-weight: 800;
+
+            color: white;
+
+            background: linear-gradient(
+                135deg,
+                #6658ff,
+                #8b5cf6
+            );
+
+            box-shadow: 0 8px 25px rgba(100, 80, 255, .25);
+        }
+
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+
+        .brand-subtitle {
+            margin-top: 4px;
+
+            color: #64748b;
+
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+
+        /* NAVIGATION */
+
+        .navigation {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .nav-item {
+            width: 100%;
+
+            border: 1px solid transparent;
+            background: transparent;
+
+            color: #8290a8;
+
+            padding: 13px 13px;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+            text-align: left;
+
+            transition: .2s ease;
+        }
+
+
+        .nav-item:hover {
+            background: #101827;
+            color: #dce5f5;
+        }
+
+
+        .nav-item.active {
+            background: #151b38;
+            border-color: #303674;
+            color: #9da5ff;
+        }
+
+
+        .nav-icon {
+            width: 22px;
+
+            text-align: center;
+
+            font-size: 15px;
+        }
+
+
+        /* SIDEBAR BOTTOM */
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+
+        .agent-status {
+            border: 1px solid #1c293a;
+            background: #0c131f;
+
+            border-radius: 11px;
+
+            padding: 13px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow: 0 0 10px #22c55e;
+        }
+
+
+        .agent-status strong {
+            display: block;
+
+            font-size: 12px;
+        }
+
+
+        .agent-status span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #64748b;
+
+            font-size: 10px;
+        }
+
+
+        .version {
+            text-align: center;
+
+            color: #475569;
+
+            font-size: 9px;
+
+            margin-top: 14px;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+
+            width: calc(100% - 250px);
+
+            min-height: 100vh;
+
+            padding: 34px 42px;
+
+            background:
+                radial-gradient(
+                    circle at 75% 0%,
+                    rgba(72, 61, 160, .15),
+                    transparent 32%
+                ),
+                #070b14;
+        }
+
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: flex-start;
+
+            margin-bottom: 28px;
+        }
+
+
+        .eyebrow {
+            color: #777cff;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .page-title {
+            font-size: 31px;
+
+            font-weight: 800;
+
+            letter-spacing: -.7px;
+        }
+
+
+        .page-description {
+            color: #71819b;
+
+            font-size: 13px;
+
+            margin-top: 8px;
+        }
+
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .live {
+            border: 1px solid #154a39;
+
+            background: #091d19;
+
+            color: #54df9a;
+
+            border-radius: 20px;
+
+            padding: 9px 14px;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .live span {
+            display: inline-block;
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #25d477;
+
+            margin-right: 6px;
+
+            box-shadow: 0 0 8px #25d477;
+        }
+
+
+        .refresh-button {
+            border: 1px solid #26324b;
+
+            background: #111827;
+
+            color: #d9e1ef;
+
+            padding: 10px 16px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+        }
+
+
+        .refresh-button:hover {
+            background: #172033;
+        }
+
+
+        /* =========================
+           PAGE SYSTEM
+        ========================= */
+
+        .page {
+            display: none;
+        }
+
+
+        .page.active {
+            display: block;
+            animation: fadeIn .18s ease;
+        }
+
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =========================
+           STAT CARDS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .stat-card {
+            background: #0d131f;
+
+            border: 1px solid #202b3d;
+
+            border-radius: 14px;
+
+            padding: 20px;
+
+            min-height: 145px;
+
+            transition: .2s;
+        }
+
+
+        .stat-card:hover {
+            border-color: #303d56;
+            transform: translateY(-2px);
+        }
+
+
+        .stat-card.recovery {
+            border-color: #14513d;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #0d171e,
+                    #0d161b
+                );
+        }
+
+
+        .stat-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            color: #8290a8;
+
+            font-size: 11px;
+        }
+
+
+        .stat-icon {
+            width: 31px;
+            height: 31px;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            background: #172238;
+            color: #6ea8ff;
+        }
+
+
+        .stat-icon.red {
+            background: #291722;
+            color: #ff637d;
+        }
+
+
+        .stat-icon.green {
+            background: #10302a;
+            color: #43df95;
+        }
+
+
+        .stat-icon.purple {
+            background: #211a3c;
+            color: #aa91ff;
+        }
+
+
+        .stat-value {
+            margin-top: 20px;
+
+            font-size: 25px;
+
+            font-weight: 800;
+        }
+
+
+        .green-text {
+            color: #39df8c;
+        }
+
+
+        .stat-description {
+            color: #53637b;
+
+            font-size: 10px;
+
+            margin-top: 7px;
+        }
+
+
+        /* =========================
+           INSIGHT
+        ========================= */
+
+        .insight {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            border: 1px solid #282d63;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #111633,
+                    #0d1320
+                );
+
+            border-radius: 13px;
+
+            padding: 15px 18px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .insight-icon {
+            width: 35px;
+            height: 35px;
+
+            border-radius: 10px;
+
+            background: #20255a;
+
+            color: #9ea4ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .insight-title {
+            color: #8f98ff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+        }
+
+
+        .insight-text {
+            color: #71809a;
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+
+        .model-badge {
+            margin-left: auto;
+
+            border: 1px solid #343b80;
+
+            color: #9da5ff;
+
+            padding: 7px 11px;
+
+            border-radius: 7px;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .panel {
+            background: #0b111c;
+
+            border: 1px solid #1e293a;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+
+        .panel-header {
+            padding: 19px 22px;
+
+            border-bottom: 1px solid #1b2535;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+
+        .panel-title {
+            font-size: 16px;
+
+            font-weight: 750;
+        }
+
+
+        .panel-subtitle {
+            color: #596982;
+
+            font-size: 10px;
+
+            margin-top: 5px;
+        }
+
+
+        .safe-badge {
+            border: 1px solid #164936;
+
+            background: #092019;
+
+            color: #4ade94;
+
+            border-radius: 7px;
+
+            padding: 7px 10px;
+
+            font-size: 9px;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+
+        th {
+            background: #0d141f;
+
+            color: #53647d;
+
+            font-size: 9px;
+
+            letter-spacing: .8px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            padding: 13px 16px;
+        }
+
+
+        td {
+            padding: 14px 16px;
+
+            border-top: 1px solid #172131;
+
+            color: #a8b4c8;
+
+            font-size: 11px;
+        }
+
+
+        tbody tr {
+            transition: .15s;
+        }
+
+
+        tbody tr:hover {
+            background: #101827;
+        }
+
+
+        .payment-id {
+            color: #e1e7f2;
+
+            font-weight: 700;
+        }
+
+
+        .amount {
+            color: #dbe3ef;
+        }
+
+
+        .expected {
+            color: #dbe3ef;
+
+            font-weight: 700;
+        }
+
+
+        .probability {
+            color: #7ea7ff;
+        }
+
+
+        /* =========================
+           ACTION BADGES
+        ========================= */
+
+        .action {
+            display: inline-block;
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        .retry-now {
+            color: #4ade91;
+
+            background: #0c2a1e;
+
+            border: 1px solid #155c40;
+        }
+
+
+        .retry-scheduled {
+            color: #f7bd57;
+
+            background: #30250e;
+
+            border: 1px solid #66501b;
+        }
+
+
+        .send-link {
+            color: #79a9ff;
+
+            background: #111f3b;
+
+            border: 1px solid #264a85;
+        }
+
+
+        .escalate {
+            color: #ff8393;
+
+            background: #31161e;
+
+            border: 1px solid #662832;
+        }
+
+
+        .clickable {
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           DECISION ENGINE
+        ========================= */
+
+        .decision-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .decision-card {
+            padding: 22px;
+
+            background: #0c131f;
+
+            border: 1px solid #202b3d;
+
+            border-radius: 13px;
+        }
+
+
+        .step-number {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #181f43;
+
+            color: #929cff;
+
+            font-weight: 800;
+
+            margin-bottom: 18px;
+        }
+
+
+        .decision-card h3 {
+            font-size: 16px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .decision-card p {
+            color: #687992;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+
+        .formula {
+            margin-top: 20px;
+
+            padding: 22px;
+
+            background: #0d1320;
+
+            border: 1px solid #242e42;
+
+            border-radius: 13px;
+
+            text-align: center;
+        }
+
+
+        .formula-label {
+            color: #66758d;
+
+            font-size: 11px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .formula-text {
+            color: #8fa2ff;
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+
+        /* =========================
+           ANALYTICS
+        ========================= */
+
+        .analytics-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        .analytics-card {
+            background: #0c131f;
+
+            border: 1px solid #202b3d;
+
+            border-radius: 13px;
+
+            padding: 20px;
+        }
+
+
+        .analytics-card h3 {
+            font-size: 14px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .bar-row {
+            margin-bottom: 17px;
+        }
+
+
+        .bar-label {
+            display: flex;
+
+            justify-content: space-between;
+
+            font-size: 11px;
+
+            color: #8a99ae;
+
+            margin-bottom: 7px;
+        }
+
+
+        .bar {
+            height: 8px;
+
+            border-radius: 20px;
+
+            background: #172131;
+
+            overflow: hidden;
+        }
+
+
+        .bar-fill {
+            height: 100%;
+
+            border-radius: 20px;
+
+            background: linear-gradient(
+                90deg,
+                #655cff,
+                #49a1ff
+            );
+        }
+
+
+        .metric-list {
+            display: grid;
+
+            gap: 11px;
+        }
+
+
+        .metric-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            padding: 12px;
+
+            background: #0a101a;
+
+            border-radius: 8px;
+
+            font-size: 11px;
+        }
+
+
+        .metric-row span {
+            color: #65748c;
+        }
+
+
+        .metric-row strong {
+            color: #d9e1ed;
+        }
+
+
+        /* =========================
+           FAILURE LOG
+        ========================= */
+
+        .failure-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .failure-card {
+            padding: 20px;
+
+            background: #0c131f;
+
+            border: 1px solid #202b3d;
+
+            border-radius: 12px;
+        }
+
+
+        .failure-card .failure-count {
+            font-size: 26px;
+
+            font-weight: 800;
+
+            margin-top: 10px;
+        }
+
+
+        .failure-card .failure-name {
+            color: #71809a;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, .7);
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 500;
+        }
+
+
+        .modal.show {
+            display: flex;
+        }
+
+
+        .modal-content {
+            width: min(620px, 92%);
+
+            max-height: 85vh;
+
+            overflow-y: auto;
+
+            background: #0c131f;
+
+            border: 1px solid #28364c;
+
+            border-radius: 15px;
+
+            padding: 25px;
+
+            box-shadow: 0 25px 80px rgba(0,0,0,.5);
+        }
+
+
+        .modal-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .close {
+            border: 0;
+
+            background: transparent;
+
+            color: #7b8aa2;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+
+        .decision-detail-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+        }
+
+
+        .detail {
+            background: #080e17;
+
+            border: 1px solid #182335;
+
+            border-radius: 9px;
+
+            padding: 13px;
+        }
+
+
+        .detail span {
+            display: block;
+
+            color: #596a82;
+
+            font-size: 9px;
+
+            margin-bottom: 6px;
+
+            text-transform: uppercase;
+        }
+
+
+        .detail strong {
+            color: #dce4f0;
+
+            font-size: 13px;
+        }
+
+
+        .reasoning {
+            margin-top: 15px;
+
+            background: #111936;
+
+            border: 1px solid #292f67;
+
+            border-radius: 10px;
+
+            padding: 15px;
+        }
+
+
+        .reasoning-title {
+            color: #929aff;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+        }
+
+
+        .reasoning-text {
+            color: #8998b0;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 35px !important;
+
+            color: #65758d;
+        }
+
+
+        .error {
+            color: #ff8091;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            margin-top: 25px;
+
+            padding: 18px 2px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            color: #425169;
+
+            font-size: 9px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .decision-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .failure-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .sidebar {
+                width: 70px;
+
+                padding: 15px 8px;
+            }
+
+            .brand > div:last-child,
+            .nav-item span:last-child,
+            .agent-status div:last-child,
+            .version {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 8px 0 25px;
+            }
+
+            .nav-item {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+
+                width: calc(100% - 70px);
+
+                padding: 22px 15px;
+            }
+
+            .stats,
+            .decision-grid,
+            .analytics-grid,
+            .failure-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                gap: 15px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 7px;
+            }
+
+        }
+
+    </style>
 </head>
+
 
 <body>
 
-    <!-- Background decoration -->
-    <div class="background-glow glow-one"></div>
-    <div class="background-glow glow-two"></div>
+<div class="app">
 
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
 
-    <!-- Main application -->
-    <div class="app-container">
+    <aside class="sidebar">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+        <div class="brand">
 
-            <div class="brand">
+            <div class="brand-icon">
+                R
+            </div>
 
-                <div class="brand-icon">
-                    R
+            <div>
+                <div class="brand-name">
+                    RecoverIQ
                 </div>
 
+                <div class="brand-subtitle">
+                    Revenue Intelligence
+                </div>
+            </div>
+
+        </div>
+
+
+        <nav class="navigation">
+
+            <button class="nav-item active" data-page="queue">
+
+                <span class="nav-icon">◈</span>
+                <span>Recovery Queue</span>
+
+            </button>
+
+
+            <button class="nav-item" data-page="decision">
+
+                <span class="nav-icon">◉</span>
+                <span>Decision Engine</span>
+
+            </button>
+
+
+            <button class="nav-item" data-page="analytics">
+
+                <span class="nav-icon">↗</span>
+                <span>Recovery Analytics</span>
+
+            </button>
+
+
+            <button class="nav-item" data-page="failures">
+
+                <span class="nav-icon">⚠</span>
+                <span>Failure Log</span>
+
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="agent-status">
+
+                <div class="status-dot"></div>
+
                 <div>
-                    <h1>RecoverIQ</h1>
-                    <span>Revenue Intelligence</span>
+                    <strong>Agent Online</strong>
+                    <span>Monitoring payments</span>
                 </div>
 
             </div>
 
+            <div class="version">
+                RecoverIQ v1.0 · Buildathon
+            </div>
 
-            <nav class="navigation">
+        </div>
 
-                <div class="nav-item active">
-                    <span class="nav-icon">◈</span>
-                    Recovery Queue
+    </aside>
+
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="eyebrow">
+                    AUTONOMOUS REVENUE RECOVERY
                 </div>
 
-                <div class="nav-item">
-                    <span class="nav-icon">◉</span>
-                    Decision Engine
-                </div>
+                <h1 class="page-title" id="page-title">
+                    Recovery Command Center
+                </h1>
 
-                <div class="nav-item">
-                    <span class="nav-icon">↗</span>
-                    Recovery Analytics
-                </div>
-
-                <div class="nav-item">
-                    <span class="nav-icon">⚠</span>
-                    Failure Log
-                </div>
-
-            </nav>
-
-
-            <div class="sidebar-bottom">
-
-                <div class="agent-status">
-
-                    <div class="status-dot"></div>
-
-                    <div>
-                        <strong>Agent Online</strong>
-                        <span>Monitoring payments</span>
-                    </div>
-
-                </div>
-
-                <div class="version">
-                    RecoverIQ v1.0 · Buildathon
-                </div>
+                <p class="page-description" id="page-description">
+                    Identify the payments that are economically worth recovering.
+                </p>
 
             </div>
 
-        </aside>
 
+            <div class="top-actions">
 
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
-
-
-            <!-- TOP BAR -->
-            <header class="topbar">
-
-                <div>
-                    <div class="eyebrow">
-                        AUTONOMOUS REVENUE RECOVERY
-                    </div>
-
-                    <h2>Recovery Command Center</h2>
-
-                    <p>
-                        Identify the payments that are economically worth recovering.
-                    </p>
+                <div class="live">
+                    <span></span>
+                    LIVE
                 </div>
 
+                <button class="refresh-button" id="refresh-btn">
+                    ↻ &nbsp; Refresh
+                </button>
 
-                <div class="topbar-right">
+            </div>
 
-                    <div class="live-indicator">
-                        <span></span>
-                        LIVE
-                    </div>
-
-                    <button id="refresh-btn" class="refresh-button">
-                        ↻ &nbsp; Refresh
-                    </button>
-
-                </div>
-
-            </header>
+        </header>
 
 
-            <!-- STAT CARDS -->
-            <section class="stats-grid">
 
+        <!-- =========================================
+             RECOVERY QUEUE PAGE
+        ========================================== -->
+
+        <section class="page active" id="page-queue">
+
+
+            <div class="stats">
 
                 <div class="stat-card">
 
-                    <div class="stat-top">
+                    <div class="stat-header">
+
                         <span>Total Payments</span>
-                        <div class="stat-icon blue">◈</div>
+
+                        <div class="stat-icon">
+                            ◈
+                        </div>
+
                     </div>
 
-                    <div id="total-payments" class="stat-value">
+                    <div class="stat-value" id="total-payments">
                         —
                     </div>
 
@@ -145,12 +1459,17 @@
 
                 <div class="stat-card">
 
-                    <div class="stat-top">
+                    <div class="stat-header">
+
                         <span>Failed Revenue</span>
-                        <div class="stat-icon red">₹</div>
+
+                        <div class="stat-icon red">
+                            ₹
+                        </div>
+
                     </div>
 
-                    <div id="failed-amount" class="stat-value">
+                    <div class="stat-value" id="failed-amount">
                         —
                     </div>
 
@@ -161,17 +1480,20 @@
                 </div>
 
 
-                <div class="stat-card highlight">
+                <div class="stat-card recovery">
 
-                    <div class="stat-top">
+                    <div class="stat-header">
+
                         <span>Expected Recovery</span>
 
                         <div class="stat-icon green">
                             ↗
                         </div>
+
                     </div>
 
-                    <div id="expected-recovery" class="stat-value green-text">
+                    <div class="stat-value green-text"
+                         id="expected-recovery">
                         —
                     </div>
 
@@ -184,15 +1506,18 @@
 
                 <div class="stat-card">
 
-                    <div class="stat-top">
+                    <div class="stat-header">
+
                         <span>Decision Mode</span>
 
                         <div class="stat-icon purple">
                             AI
                         </div>
+
                     </div>
 
-                    <div class="decision-mode">
+                    <div class="stat-value"
+                         style="font-size:18px;color:#a897ff">
                         AUTONOMOUS
                     </div>
 
@@ -202,17 +1527,17 @@
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- AI INSIGHT -->
-            <section class="insight-card">
+
+            <div class="insight">
 
                 <div class="insight-icon">
                     ✦
                 </div>
 
-                <div class="insight-content">
+                <div>
 
                     <div class="insight-title">
                         RecoverIQ AI Insight
@@ -226,43 +1551,37 @@
 
                 </div>
 
-                <div class="ai-badge">
+                <div class="model-badge">
                     MODEL ACTIVE
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- QUEUE SECTION -->
-            <section class="queue-section">
 
-                <div class="section-header">
+            <div class="panel">
+
+                <div class="panel-header">
 
                     <div>
 
-                        <div class="section-title">
+                        <div class="panel-title">
                             Recovery Opportunities
                         </div>
 
-                        <div class="section-subtitle">
+                        <div class="panel-subtitle">
                             Highest expected-value payments appear first
                         </div>
 
                     </div>
 
-
-                    <div class="queue-meta">
-
-                        <span class="secure-badge">
-                            ✓ Safety checks enabled
-                        </span>
-
+                    <div class="safe-badge">
+                        ✓ Safety checks enabled
                     </div>
 
                 </div>
 
 
-                <!-- TABLE -->
                 <div class="table-wrapper">
 
                     <table>
@@ -272,17 +1591,11 @@
                             <tr>
 
                                 <th>RANK</th>
-
                                 <th>PAYMENT</th>
-
                                 <th>AMOUNT</th>
-
                                 <th>FAILURE CAUSE</th>
-
                                 <th>P(RECOVER)</th>
-
                                 <th>EXPECTED VALUE</th>
-
                                 <th>ACTION</th>
 
                             </tr>
@@ -294,7 +1607,8 @@
 
                             <tr>
 
-                                <td colspan="7" class="loading">
+                                <td colspan="7"
+                                    class="loading">
                                     Loading recovery opportunities...
                                 </td>
 
@@ -306,31 +1620,1376 @@
 
                 </div>
 
+            </div>
 
-            </section>
+        </section>
 
 
-            <!-- FOOTER -->
-            <footer class="footer">
 
-                <div>
-                    RecoverIQ · Autonomous Revenue Recovery Agent
+        <!-- =========================================
+             DECISION ENGINE PAGE
+        ========================================== -->
+
+        <section class="page" id="page-decision">
+
+
+            <div class="decision-grid">
+
+
+                <div class="decision-card">
+
+                    <div class="step-number">
+                        01
+                    </div>
+
+                    <h3>
+                        Diagnose
+                    </h3>
+
+                    <p>
+                        Identify why the payment failed and determine
+                        the appropriate recovery strategy based on
+                        the failure cause.
+                    </p>
+
                 </div>
 
-                <div>
-                    Expected Value =
-                    <strong>P(recover) × Amount − Intervention Cost</strong>
+
+                <div class="decision-card">
+
+                    <div class="step-number">
+                        02
+                    </div>
+
+                    <h3>
+                        Predict
+                    </h3>
+
+                    <p>
+                        The machine-learning model estimates the
+                        probability that the failed payment can
+                        successfully recover.
+                    </p>
+
                 </div>
 
-            </footer>
+
+                <div class="decision-card">
+
+                    <div class="step-number">
+                        03
+                    </div>
+
+                    <h3>
+                        Rank
+                    </h3>
+
+                    <p>
+                        RecoverIQ calculates expected economic value
+                        and prioritizes the highest-value recovery
+                        opportunities.
+                    </p>
+
+                </div>
 
 
-        </main>
+                <div class="decision-card">
+
+                    <div class="step-number">
+                        04
+                    </div>
+
+                    <h3>
+                        Protect
+                    </h3>
+
+                    <p>
+                        Safety rules prevent excessive retries,
+                        recent customer contact and low-confidence
+                        automated actions.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="formula">
+
+                <div class="formula-label">
+                    RECOVERY DECISION FORMULA
+                </div>
+
+                <div class="formula-text">
+                    Expected Value = P(recover) × Amount − Intervention Cost
+                </div>
+
+            </div>
+
+
+            <div class="panel" style="margin-top:20px">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            How RecoverIQ Makes Decisions
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Autonomous decisions are bounded by safety rules
+                        </div>
+
+                    </div>
+
+                    <div class="safe-badge">
+                        ✓ Safety Layer Active
+                    </div>
+
+                </div>
+
+
+                <div style="padding:22px">
+
+                    <div class="metric-list">
+
+                        <div class="metric-row">
+
+                            <span>Diagnosis Layer</span>
+
+                            <strong>
+                                Failure cause classification
+                            </strong>
+
+                        </div>
+
+                        <div class="metric-row">
+
+                            <span>Prediction Layer</span>
+
+                            <strong>
+                                Logistic Regression ML model
+                            </strong>
+
+                        </div>
+
+                        <div class="metric-row">
+
+                            <span>Ranking Layer</span>
+
+                            <strong>
+                                Expected-value optimization
+                            </strong>
+
+                        </div>
+
+                        <div class="metric-row">
+
+                            <span>Protection Layer</span>
+
+                            <strong>
+                                Safety rules + human escalation
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             ANALYTICS PAGE
+        ========================================== -->
+
+        <section class="page" id="page-analytics">
+
+
+            <div class="analytics-grid">
+
+
+                <div class="analytics-card">
+
+                    <h3>
+                        Failure Distribution
+                    </h3>
+
+                    <div id="failure-bars">
+                        Loading...
+                    </div>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <h3>
+                        Recovery Performance
+                    </h3>
+
+                    <div class="metric-list"
+                         id="analytics-metrics">
+
+                        Loading...
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="panel" style="margin-top:18px">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Recovery Strategy Distribution
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Actions selected by the RecoverIQ decision engine
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div style="padding:20px">
+
+                    <div id="strategy-bars">
+                        Loading...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================================
+             FAILURE LOG PAGE
+        ========================================== -->
+
+        <section class="page" id="page-failures">
+
+
+            <div class="failure-grid"
+                 id="failure-cards">
+
+                Loading...
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <div class="panel-title">
+                            Failure Log
+                        </div>
+
+                        <div class="panel-subtitle">
+                            Payment failure categories observed in the dataset
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>PAYMENT</th>
+                                <th>AMOUNT</th>
+                                <th>FAILURE</th>
+                                <th>RECOVERY PROBABILITY</th>
+                                <th>ACTION</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="failure-body">
+
+                            <tr>
+                                <td colspan="5"
+                                    class="loading">
+                                    Loading failure log...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <footer class="footer">
+
+            <div>
+                RecoverIQ · Autonomous Revenue Recovery Agent
+            </div>
+
+            <div>
+                Expected Value =
+                <strong>
+                    P(recover) × Amount − Intervention Cost
+                </strong>
+            </div>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================================
+     DECISION MODAL
+========================================== -->
+
+<div class="modal" id="decision-modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    RECOVERIQ DECISION
+                </div>
+
+                <h2 id="modal-title">
+                    Payment Decision
+                </h2>
+
+            </div>
+
+            <button class="close"
+                    id="close-modal">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="decision-detail-grid"
+             id="decision-details">
+
+        </div>
+
+
+        <div class="reasoning">
+
+            <div class="reasoning-title">
+                WHY THIS DECISION?
+            </div>
+
+            <div class="reasoning-text"
+                 id="reasoning-text">
+            </div>
+
+        </div>
 
     </div>
 
+</div>
 
-    <script src="app.js"></script>
+
+
+<script>
+
+    /* =========================================
+       CONFIGURATION
+    ========================================== */
+
+    const API_URL = "http://localhost:8000";
+
+
+    let queueData = [];
+
+
+    /* =========================================
+       FORMATTERS
+    ========================================== */
+
+    function formatMoney(value) {
+
+        const number = Number(value) || 0;
+
+        return "₹" + number.toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+    }
+
+
+    function formatAction(action) {
+
+        const actions = {
+
+            retry_now: "Retry Now",
+
+            retry_scheduled: "Retry Scheduled",
+
+            send_payment_link: "Send Payment Link",
+
+            escalate_to_human: "Escalate"
+
+        };
+
+        return actions[action] || action;
+
+    }
+
+
+    function createActionBadge(action) {
+
+        let className = "action ";
+
+        if (action === "retry_now") {
+
+            className += "retry-now";
+
+        }
+
+        else if (action === "retry_scheduled") {
+
+            className += "retry-scheduled";
+
+        }
+
+        else if (action === "send_payment_link") {
+
+            className += "send-link";
+
+        }
+
+        else {
+
+            className += "escalate";
+
+        }
+
+        return `
+            <span class="${className}">
+                ${formatAction(action)}
+            </span>
+        `;
+
+    }
+
+
+    /* =========================================
+       LOAD QUEUE
+    ========================================== */
+
+    async function loadQueue() {
+
+        try {
+
+            const response =
+                await fetch(`${API_URL}/queue`);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "API returned " + response.status
+                );
+
+            }
+
+            const data =
+                await response.json();
+
+            queueData = data.queue || [];
+
+
+            /* Dashboard statistics */
+
+            document.getElementById(
+                "total-payments"
+            ).textContent =
+                Number(data.total_payments || 0)
+                    .toLocaleString("en-IN");
+
+
+            document.getElementById(
+                "failed-amount"
+            ).textContent =
+                formatMoney(
+                    data.total_failed_amount
+                );
+
+
+            document.getElementById(
+                "expected-recovery"
+            ).textContent =
+                formatMoney(
+                    data.total_expected_recovered_value
+                );
+
+
+            renderQueue();
+
+            renderAnalytics();
+
+            renderFailureLog();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            document.getElementById(
+                "queue-body"
+            ).innerHTML = `
+
+                <tr>
+
+                    <td colspan="7"
+                        class="error">
+
+                        Unable to connect to RecoverIQ API.
+
+                        <br><br>
+
+                        Make sure the backend is running on
+                        <strong>localhost:8000</strong>.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    /* =========================================
+       RENDER RECOVERY QUEUE
+    ========================================== */
+
+    function renderQueue() {
+
+        const body =
+            document.getElementById(
+                "queue-body"
+            );
+
+
+        if (!queueData.length) {
+
+            body.innerHTML = `
+
+                <tr>
+                    <td colspan="7"
+                        class="loading">
+                        No recovery opportunities found.
+                    </td>
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        body.innerHTML =
+            queueData.slice(0, 100)
+            .map(payment => `
+
+                <tr class="clickable"
+                    data-event="${payment.event_id}">
+
+                    <td>
+                        ${payment.rank}
+                    </td>
+
+                    <td class="payment-id">
+                        ${payment.event_id}
+                    </td>
+
+                    <td class="amount">
+                        ${formatMoney(payment.amount)}
+                    </td>
+
+                    <td>
+                        ${payment.cause}
+                    </td>
+
+                    <td class="probability">
+                        ${(Number(
+                            payment.recovery_probability
+                        ) * 100).toFixed(1)}%
+                    </td>
+
+                    <td class="expected">
+                        ${formatMoney(
+                            payment.expected_value
+                        )}
+                    </td>
+
+                    <td>
+                        ${createActionBadge(
+                            payment.final_action
+                        )}
+                    </td>
+
+                </tr>
+
+            `)
+            .join("");
+
+
+        body.querySelectorAll("tr[data-event]")
+            .forEach(row => {
+
+                row.addEventListener(
+                    "click",
+                    () => {
+
+                        openDecision(
+                            row.dataset.event
+                        );
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    /* =========================================
+       NAVIGATION
+    ========================================== */
+
+    const navItems =
+        document.querySelectorAll(
+            ".nav-item"
+        );
+
+
+    const pages = {
+
+        queue: {
+            title: "Recovery Command Center",
+            description:
+                "Identify the payments that are economically worth recovering."
+        },
+
+        decision: {
+            title: "Decision Engine",
+            description:
+                "Understand how RecoverIQ diagnoses, predicts, ranks and protects."
+        },
+
+        analytics: {
+            title: "Recovery Analytics",
+            description:
+                "Monitor recovery probability, expected value and failure patterns."
+        },
+
+        failures: {
+            title: "Failure Log",
+            description:
+                "Explore payment failures and the recovery actions selected by the agent."
+        }
+
+    };
+
+
+    navItems.forEach(item => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const page =
+                    item.dataset.page;
+
+
+                navItems.forEach(nav => {
+
+                    nav.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+                item.classList.add(
+                    "active"
+                );
+
+
+                document
+                    .querySelectorAll(".page")
+                    .forEach(section => {
+
+                        section.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                document
+                    .getElementById(
+                        "page-" + page
+                    )
+                    .classList.add(
+                        "active"
+                    );
+
+
+                document.getElementById(
+                    "page-title"
+                ).textContent =
+                    pages[page].title;
+
+
+                document.getElementById(
+                    "page-description"
+                ).textContent =
+                    pages[page].description;
+
+            }
+
+        );
+
+    });
+
+
+    /* =========================================
+       ANALYTICS
+    ========================================== */
+
+    function renderAnalytics() {
+
+        if (!queueData.length) {
+            return;
+        }
+
+
+        const failures = {};
+
+        const actions = {};
+
+
+        let totalExpected = 0;
+
+        let totalAmount = 0;
+
+        let probabilitySum = 0;
+
+
+        queueData.forEach(payment => {
+
+            const failure =
+                payment.cause || "Other";
+
+            const action =
+                payment.final_action || "other";
+
+
+            failures[failure] =
+                (failures[failure] || 0) + 1;
+
+
+            actions[action] =
+                (actions[action] || 0) + 1;
+
+
+            totalExpected +=
+                Number(payment.expected_value) || 0;
+
+
+            totalAmount +=
+                Number(payment.amount) || 0;
+
+
+            probabilitySum +=
+                Number(
+                    payment.recovery_probability
+                ) || 0;
+
+        });
+
+
+        const maxFailure =
+            Math.max(
+                ...Object.values(failures)
+            );
+
+
+        document.getElementById(
+            "failure-bars"
+        ).innerHTML =
+            Object.entries(failures)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => {
+
+                const percent =
+                    (count / maxFailure) * 100;
+
+                return `
+
+                    <div class="bar-row">
+
+                        <div class="bar-label">
+
+                            <span>
+                                ${name}
+                            </span>
+
+                            <strong>
+                                ${count.toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+                        <div class="bar">
+
+                            <div class="bar-fill"
+                                 style="width:${percent}%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+        const averageProbability =
+            probabilitySum /
+            queueData.length;
+
+
+        document.getElementById(
+            "analytics-metrics"
+        ).innerHTML = `
+
+            <div class="metric-row">
+
+                <span>
+                    Average Recovery Probability
+                </span>
+
+                <strong>
+                    ${(averageProbability * 100).toFixed(1)}%
+                </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+                <span>
+                    Expected Recovery
+                </span>
+
+                <strong>
+                    ${formatMoney(totalExpected)}
+                </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+                <span>
+                    Failed Amount
+                </span>
+
+                <strong>
+                    ${formatMoney(totalAmount)}
+                </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+                <span>
+                    Opportunities Ranked
+                </span>
+
+                <strong>
+                    ${queueData.length.toLocaleString("en-IN")}
+                </strong>
+
+            </div>
+
+        `;
+
+
+        const maxAction =
+            Math.max(
+                ...Object.values(actions)
+            );
+
+
+        document.getElementById(
+            "strategy-bars"
+        ).innerHTML =
+            Object.entries(actions)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => {
+
+                const percent =
+                    (count / maxAction) * 100;
+
+                return `
+
+                    <div class="bar-row">
+
+                        <div class="bar-label">
+
+                            <span>
+                                ${formatAction(name)}
+                            </span>
+
+                            <strong>
+                                ${count.toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+                        <div class="bar">
+
+                            <div class="bar-fill"
+                                 style="width:${percent}%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+    }
+
+
+    /* =========================================
+       FAILURE LOG
+    ========================================== */
+
+    function renderFailureLog() {
+
+        if (!queueData.length) {
+            return;
+        }
+
+
+        const counts = {};
+
+
+        queueData.forEach(payment => {
+
+            const cause =
+                payment.cause || "Other failure";
+
+            counts[cause] =
+                (counts[cause] || 0) + 1;
+
+        });
+
+
+        document.getElementById(
+            "failure-cards"
+        ).innerHTML =
+
+            Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => `
+
+                <div class="failure-card">
+
+                    <div class="failure-name">
+                        ${name}
+                    </div>
+
+                    <div class="failure-count">
+                        ${count.toLocaleString("en-IN")}
+                    </div>
+
+                </div>
+
+            `)
+            .join("");
+
+
+        document.getElementById(
+            "failure-body"
+        ).innerHTML =
+
+            queueData.slice(0, 100)
+            .map(payment => `
+
+                <tr>
+
+                    <td class="payment-id">
+                        ${payment.event_id}
+                    </td>
+
+                    <td>
+                        ${formatMoney(payment.amount)}
+                    </td>
+
+                    <td>
+                        ${payment.cause}
+                    </td>
+
+                    <td class="probability">
+                        ${(Number(
+                            payment.recovery_probability
+                        ) * 100).toFixed(1)}%
+                    </td>
+
+                    <td>
+                        ${createActionBadge(
+                            payment.final_action
+                        )}
+                    </td>
+
+                </tr>
+
+            `)
+            .join("");
+
+    }
+
+
+    /* =========================================
+       DECISION MODAL
+    ========================================== */
+
+    async function openDecision(eventId) {
+
+        const modal =
+            document.getElementById(
+                "decision-modal"
+            );
+
+
+        modal.classList.add("show");
+
+
+        document.getElementById(
+            "modal-title"
+        ).textContent =
+            eventId;
+
+
+        document.getElementById(
+            "decision-details"
+        ).innerHTML = `
+
+            <div class="loading"
+                 style="grid-column:1/-1">
+                Loading decision...
+            </div>
+
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/decision/${eventId}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Decision API error"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            document.getElementById(
+                "decision-details"
+            ).innerHTML = `
+
+                <div class="detail">
+
+                    <span>Amount</span>
+
+                    <strong>
+                        ${formatMoney(data.amount)}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Failure Cause</span>
+
+                    <strong>
+                        ${data.cause}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Recovery Probability</span>
+
+                    <strong>
+                        ${(data.recovery_probability * 100)
+                            .toFixed(1)}%
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Expected Value</span>
+
+                    <strong>
+                        ${formatMoney(data.expected_value)}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Initial Action</span>
+
+                    <strong>
+                        ${formatAction(
+                            data.initial_action
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Final Action</span>
+
+                    <strong>
+                        ${formatAction(
+                            data.final_action
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Safe To Execute</span>
+
+                    <strong>
+                        ${data.safe_to_execute
+                            ? "YES"
+                            : "NO"}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span>Intervention Cost</span>
+
+                    <strong>
+                        ${formatMoney(
+                            data.intervention_cost
+                        )}
+                    </strong>
+
+                </div>
+
+            `;
+
+
+            document.getElementById(
+                "reasoning-text"
+            ).innerHTML = `
+
+                <strong>
+                    ${data.reasoning.formula}
+                </strong>
+
+                <br><br>
+
+                ${data.reasoning.calculation}
+
+                <br><br>
+
+                Result:
+                <strong>
+                    ${data.reasoning.result}
+                </strong>
+
+                <br><br>
+
+                Safety:
+                ${data.rules_triggered.join(", ")}
+
+            `;
+
+        }
+
+        catch (error) {
+
+            document.getElementById(
+                "decision-details"
+            ).innerHTML = `
+
+                <div class="error"
+                     style="grid-column:1/-1">
+
+                    Unable to load decision details.
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    /* =========================================
+       MODAL CONTROLS
+    ========================================== */
+
+    document.getElementById(
+        "close-modal"
+    ).addEventListener(
+        "click",
+        () => {
+
+            document
+                .getElementById(
+                    "decision-modal"
+                )
+                .classList.remove(
+                    "show"
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "decision-modal"
+    ).addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target.id ===
+                "decision-modal"
+            ) {
+
+                event.currentTarget
+                    .classList.remove(
+                        "show"
+                    );
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       REFRESH
+    ========================================== */
+
+    document.getElementById(
+        "refresh-btn"
+    ).addEventListener(
+        "click",
+        async () => {
+
+            const button =
+                document.getElementById(
+                    "refresh-btn"
+                );
+
+            button.textContent =
+                "↻ Loading...";
+
+            await loadQueue();
+
+            button.textContent =
+                "↻  Refresh";
+
+        }
+    );
+
+
+    /* =========================================
+       INITIAL LOAD
+    ========================================== */
+
+    loadQueue();
+
+</script>
 
 </body>
 

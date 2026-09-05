@@ -1,21 +1,28 @@
 const API_URL = "http://127.0.0.1:8000";
 
 
-// Format money in Indian Rupees
+// ============================================================
+// FORMAT MONEY
+// ============================================================
+
 function formatMoney(value) {
     const number = Number(value);
 
-    if (!Number.isFinite(number)) {
+    if (isNaN(number)) {
         return "₹0.00";
     }
 
     return "₹" + number.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 }
 
 
-// Convert action into readable text
+// ============================================================
+// FORMAT ACTION
+// ============================================================
+
 function formatAction(action) {
 
     const actions = {
@@ -29,7 +36,10 @@ function formatAction(action) {
 }
 
 
-// Create action badge
+// ============================================================
+// ACTION BADGE
+// ============================================================
+
 function createActionBadge(action) {
 
     let className = "action-badge ";
@@ -55,97 +65,92 @@ function createActionBadge(action) {
 }
 
 
-// Load recovery queue
+// ============================================================
+// LOAD RECOVERY QUEUE
+// ============================================================
+
 async function loadQueue() {
+
+    const refreshButton = document.getElementById("refresh-btn");
+    const queueBody = document.getElementById("queue-body");
 
     try {
 
+        // Loading state
+        if (refreshButton) {
+            refreshButton.disabled = true;
+            refreshButton.innerHTML = "↻ &nbsp; Loading...";
+        }
+
+        queueBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="loading">
+                    Loading recovery opportunities...
+                </td>
+            </tr>
+        `;
+
+
+        // Call backend
         const response = await fetch(`${API_URL}/queue`);
 
+
         if (!response.ok) {
-            throw new Error("Failed to load queue");
+            throw new Error(
+                `API returned status ${response.status}`
+            );
         }
+
 
         const data = await response.json();
 
-        console.log("Queue received:", data);
+        console.log("RecoverIQ Queue:", data);
 
 
-        // --------------------------------------------------
-        // UPDATE DASHBOARD STATISTICS
-        // --------------------------------------------------
-
-        const totalPayments = Number(data.total_payments || 0);
+        // ====================================================
+        // UPDATE STATISTICS
+        // ====================================================
 
         document.getElementById("total-payments").textContent =
-            totalPayments.toLocaleString("en-IN");
-
-
-        // Get failed amount from API if available.
-        // Otherwise calculate it from the queue.
-        let totalFailedAmount =
-            Number(
-                data.total_failed_amount ??
-                data.total_failed ??
-                data.failed_amount
-            );
-
-        if (!Number.isFinite(totalFailedAmount) || totalFailedAmount === 0) {
-
-            totalFailedAmount = data.queue.reduce(
-                (sum, payment) => {
-                    return sum + Number(payment.amount || 0);
-                },
-                0
-            );
-        }
-
-
-        // Get expected recovery from API if available.
-        // Otherwise calculate it from the queue.
-        let totalExpectedRecovery =
-            Number(
-                data.total_expected_recovered_value ??
-                data.total_expected_recovery ??
-                data.expected_recovery
-            );
-
-        if (!Number.isFinite(totalExpectedRecovery) || totalExpectedRecovery === 0) {
-
-            totalExpectedRecovery = data.queue.reduce(
-                (sum, payment) => {
-                    return sum + Number(payment.expected_value || 0);
-                },
-                0
-            );
-        }
+            Number(data.total_payments || 0).toLocaleString("en-IN");
 
 
         document.getElementById("failed-amount").textContent =
-            formatMoney(totalFailedAmount);
+            formatMoney(data.total_failed_amount);
+
 
         document.getElementById("expected-recovery").textContent =
-            formatMoney(totalExpectedRecovery);
+            formatMoney(data.total_expected_recovered_value);
 
 
-        // --------------------------------------------------
-        // GET TABLE
-        // --------------------------------------------------
+        // ====================================================
+        // UPDATE TABLE
+        // ====================================================
 
-        const tableBody = document.getElementById("queue-body");
-
-        tableBody.innerHTML = "";
+        queueBody.innerHTML = "";
 
 
-        // --------------------------------------------------
-        // DISPLAY RECOVERY OPPORTUNITIES
-        // --------------------------------------------------
+        if (!data.queue || data.queue.length === 0) {
+
+            queueBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        No recovery opportunities found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
 
         data.queue.forEach(payment => {
 
             const row = document.createElement("tr");
 
+
             row.innerHTML = `
+
                 <td>
                     ${payment.rank}
                 </td>
@@ -165,7 +170,7 @@ async function loadQueue() {
                 </td>
 
                 <td>
-                    ${(Number(payment.recovery_probability || 0) * 100).toFixed(1)}%
+                    ${(Number(payment.recovery_probability) * 100).toFixed(1)}%
                 </td>
 
                 <td>
@@ -177,42 +182,308 @@ async function loadQueue() {
                 <td>
                     ${createActionBadge(payment.final_action)}
                 </td>
+
             `;
 
-            tableBody.appendChild(row);
+
+            queueBody.appendChild(row);
+
         });
 
 
-        console.log("Dashboard updated successfully.");
+        // Update live status
+        updateSystemStatus(true);
 
     }
+
     catch (error) {
 
-        console.error("Error loading queue:", error);
+        console.error("RecoverIQ API Error:", error);
 
-        document.getElementById("queue-body").innerHTML = `
+
+        queueBody.innerHTML = `
             <tr>
                 <td colspan="7" class="loading">
+
                     Unable to connect to RecoverIQ API.
-                    Make sure the backend server is running.
+
+                    <br>
+
+                    <small>
+                        Make sure the FastAPI backend is running on
+                        http://127.0.0.1:8000
+                    </small>
+
                 </td>
             </tr>
         `;
+
+
+        updateSystemStatus(false);
+
+    }
+
+    finally {
+
+        if (refreshButton) {
+
+            refreshButton.disabled = false;
+
+            refreshButton.innerHTML =
+                "↻ &nbsp; Refresh";
+
+        }
+
     }
 }
 
 
-// --------------------------------------------------
+// ============================================================
+// SYSTEM STATUS
+// ============================================================
+
+function updateSystemStatus(online) {
+
+    const liveIndicator =
+        document.querySelector(".live-indicator");
+
+    if (!liveIndicator) {
+        return;
+    }
+
+
+    if (online) {
+
+        liveIndicator.innerHTML = `
+            <span></span>
+            LIVE
+        `;
+
+        liveIndicator.classList.remove("offline");
+
+    }
+    else {
+
+        liveIndicator.innerHTML = `
+            <span></span>
+            OFFLINE
+        `;
+
+        liveIndicator.classList.add("offline");
+
+    }
+}
+
+
+// ============================================================
 // REFRESH BUTTON
-// --------------------------------------------------
+// ============================================================
 
-document
-    .getElementById("refresh-btn")
-    .addEventListener("click", loadQueue);
+const refreshButton =
+    document.getElementById("refresh-btn");
 
 
-// --------------------------------------------------
-// LOAD DATA WHEN PAGE OPENS
-// --------------------------------------------------
+if (refreshButton) {
 
-loadQueue();
+    refreshButton.addEventListener(
+        "click",
+        function () {
+
+            console.log("Refreshing RecoverIQ queue...");
+
+            loadQueue();
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// SIDEBAR NAVIGATION
+// ============================================================
+
+const navigationItems =
+    document.querySelectorAll(".nav-item");
+
+
+navigationItems.forEach(item => {
+
+    item.addEventListener("click", function () {
+
+        // Remove active state
+        navigationItems.forEach(nav => {
+            nav.classList.remove("active");
+        });
+
+
+        // Add active state
+        this.classList.add("active");
+
+
+        const section =
+            this.dataset.section;
+
+
+        console.log(
+            "RecoverIQ navigation:",
+            section
+        );
+
+
+        // ====================================================
+        // NAVIGATION BEHAVIOR
+        // ====================================================
+
+        if (section === "queue") {
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        else if (section === "decision") {
+
+            const insight =
+                document.querySelector(".insight-card");
+
+            if (insight) {
+
+                insight.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }
+
+            showNotification(
+                "Decision Engine",
+                "RecoverIQ is using AI-based recovery decisions."
+            );
+
+        }
+
+
+        else if (section === "analytics") {
+
+            const stats =
+                document.querySelector(".stats-grid");
+
+            if (stats) {
+
+                stats.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }
+
+            showNotification(
+                "Recovery Analytics",
+                "Analytics are calculated from the recovery queue."
+            );
+
+        }
+
+
+        else if (section === "failure") {
+
+            const queue =
+                document.querySelector(".queue-section");
+
+            if (queue) {
+
+                queue.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+            }
+
+            showNotification(
+                "Failure Log",
+                "Payment failures are classified by the diagnosis engine."
+            );
+
+        }
+
+    });
+
+});
+
+
+// ============================================================
+// NOTIFICATION
+// ============================================================
+
+function showNotification(title, message) {
+
+    // Remove existing notification
+    const old =
+        document.querySelector(".recoveriq-notification");
+
+    if (old) {
+        old.remove();
+    }
+
+
+    const notification =
+        document.createElement("div");
+
+
+    notification.className =
+        "recoveriq-notification";
+
+
+    notification.innerHTML = `
+        <strong>${title}</strong>
+        <span>${message}</span>
+    `;
+
+
+    document.body.appendChild(notification);
+
+
+    // Animate in
+    setTimeout(() => {
+
+        notification.classList.add("show");
+
+    }, 10);
+
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+
+        notification.classList.remove("show");
+
+        setTimeout(() => {
+
+            notification.remove();
+
+        }, 300);
+
+    }, 3000);
+
+}
+
+
+// ============================================================
+// INITIAL LOAD
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        console.log(
+            "RecoverIQ frontend initialized."
+        );
+
+        loadQueue();
+
+    }
+);
