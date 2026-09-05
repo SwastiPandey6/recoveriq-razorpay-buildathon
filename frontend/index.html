@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RecoverIQ — Revenue Recovery Intelligence</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Background decoration -->
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+
+    <!-- Main application -->
+    <div class="app-container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    R
+                </div>
+
+                <div>
+                    <h1>RecoverIQ</h1>
+                    <span>Revenue Intelligence</span>
+                </div>
+
+            </div>
+
+
+            <nav class="navigation">
+
+                <div class="nav-item active">
+                    <span class="nav-icon">◈</span>
+                    Recovery Queue
+                </div>
+
+                <div class="nav-item">
+                    <span class="nav-icon">◉</span>
+                    Decision Engine
+                </div>
+
+                <div class="nav-item">
+                    <span class="nav-icon">↗</span>
+                    Recovery Analytics
+                </div>
+
+                <div class="nav-item">
+                    <span class="nav-icon">⚠</span>
+                    Failure Log
+                </div>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="agent-status">
+
+                    <div class="status-dot"></div>
+
+                    <div>
+                        <strong>Agent Online</strong>
+                        <span>Monitoring payments</span>
+                    </div>
+
+                </div>
+
+                <div class="version">
+                    RecoverIQ v1.0 · Buildathon
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+
+            <!-- TOP BAR -->
+            <header class="topbar">
+
+                <div>
+                    <div class="eyebrow">
+                        AUTONOMOUS REVENUE RECOVERY
+                    </div>
+
+                    <h2>Recovery Command Center</h2>
+
+                    <p>
+                        Identify the payments that are economically worth recovering.
+                    </p>
+                </div>
+
+
+                <div class="topbar-right">
+
+                    <div class="live-indicator">
+                        <span></span>
+                        LIVE
+                    </div>
+
+                    <button id="refresh-btn" class="refresh-button">
+                        ↻ &nbsp; Refresh
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- STAT CARDS -->
+            <section class="stats-grid">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+                        <span>Total Payments</span>
+                        <div class="stat-icon blue">◈</div>
+                    </div>
+
+                    <div id="total-payments" class="stat-value">
+                        —
+                    </div>
+
+                    <div class="stat-description">
+                        Failed & at-risk transactions
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+                        <span>Failed Revenue</span>
+                        <div class="stat-icon red">₹</div>
+                    </div>
+
+                    <div id="failed-amount" class="stat-value">
+                        —
+                    </div>
+
+                    <div class="stat-description">
+                        Revenue currently at risk
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card highlight">
+
+                    <div class="stat-top">
+                        <span>Expected Recovery</span>
+
+                        <div class="stat-icon green">
+                            ↗
+                        </div>
+                    </div>
+
+                    <div id="expected-recovery" class="stat-value green-text">
+                        —
+                    </div>
+
+                    <div class="stat-description">
+                        AI-ranked recovery opportunity
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+                        <span>Decision Mode</span>
+
+                        <div class="stat-icon purple">
+                            AI
+                        </div>
+                    </div>
+
+                    <div class="decision-mode">
+                        AUTONOMOUS
+                    </div>
+
+                    <div class="stat-description">
+                        Bounded by safety rules
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- AI INSIGHT -->
+            <section class="insight-card">
+
+                <div class="insight-icon">
+                    ✦
+                </div>
+
+                <div class="insight-content">
+
+                    <div class="insight-title">
+                        RecoverIQ AI Insight
+                    </div>
+
+                    <div class="insight-text">
+                        Payments are ranked using recovery probability,
+                        expected recovered value and intervention cost —
+                        not simply by failure time.
+                    </div>
+
+                </div>
+
+                <div class="ai-badge">
+                    MODEL ACTIVE
+                </div>
+
+            </section>
+
+
+            <!-- QUEUE SECTION -->
+            <section class="queue-section">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <div class="section-title">
+                            Recovery Opportunities
+                        </div>
+
+                        <div class="section-subtitle">
+                            Highest expected-value payments appear first
+                        </div>
+
+                    </div>
+
+
+                    <div class="queue-meta">
+
+                        <span class="secure-badge">
+                            ✓ Safety checks enabled
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE -->
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>RANK</th>
+
+                                <th>PAYMENT</th>
+
+                                <th>AMOUNT</th>
+
+                                <th>FAILURE CAUSE</th>
+
+                                <th>P(RECOVER)</th>
+
+                                <th>EXPECTED VALUE</th>
+
+                                <th>ACTION</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="queue-body">
+
+                            <tr>
+
+                                <td colspan="7" class="loading">
+                                    Loading recovery opportunities...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer class="footer">
+
+                <div>
+                    RecoverIQ · Autonomous Revenue Recovery Agent
+                </div>
+
+                <div>
+                    Expected Value =
+                    <strong>P(recover) × Amount − Intervention Cost</strong>
+                </div>
+
+            </footer>
+
+
+        </main>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
