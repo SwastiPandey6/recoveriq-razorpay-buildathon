@@ -1,16 +1,12 @@
 const API_URL = "https://recoveriq-razorpay-buildathon.onrender.com";
 
 
-// ============================================================
-// FORMAT MONEY
-// ============================================================
+// ===============================
+// BASIC HELPERS
+// ===============================
 
 function formatMoney(value) {
-    const number = Number(value);
-
-    if (isNaN(number)) {
-        return "₹0.00";
-    }
+    const number = Number(value) || 0;
 
     return "₹" + number.toLocaleString("en-IN", {
         minimumFractionDigits: 2,
@@ -18,10 +14,6 @@ function formatMoney(value) {
     });
 }
 
-
-// ============================================================
-// FORMAT ACTION
-// ============================================================
 
 function formatAction(action) {
 
@@ -32,13 +24,9 @@ function formatAction(action) {
         escalate_to_human: "Escalate"
     };
 
-    return actions[action] || action;
+    return actions[action] || action || "No Action";
 }
 
-
-// ============================================================
-// ACTION BADGE
-// ============================================================
 
 function createActionBadge(action) {
 
@@ -65,24 +53,17 @@ function createActionBadge(action) {
 }
 
 
-// ============================================================
+// ===============================
 // LOAD RECOVERY QUEUE
-// ============================================================
+// ===============================
 
 async function loadQueue() {
 
-    const refreshButton = document.getElementById("refresh-btn");
-    const queueBody = document.getElementById("queue-body");
+    const tableBody = document.getElementById("queue-body");
 
     try {
 
-        // Loading state
-        if (refreshButton) {
-            refreshButton.disabled = true;
-            refreshButton.innerHTML = "↻ &nbsp; Loading...";
-        }
-
-        queueBody.innerHTML = `
+        tableBody.innerHTML = `
             <tr>
                 <td colspan="7" class="loading">
                     Loading recovery opportunities...
@@ -90,49 +71,71 @@ async function loadQueue() {
             </tr>
         `;
 
+        console.log("Connecting to:", API_URL);
 
-        // Call backend
         const response = await fetch(`${API_URL}/queue`);
-
 
         if (!response.ok) {
             throw new Error(
-                `API returned status ${response.status}`
+                `Backend returned ${response.status}`
             );
         }
 
-
         const data = await response.json();
 
-        console.log("RecoverIQ Queue:", data);
+        console.log("RecoverIQ data received:", data);
 
 
-        // ====================================================
+        // ===============================
         // UPDATE STATISTICS
-        // ====================================================
+        // ===============================
 
         document.getElementById("total-payments").textContent =
-            Number(data.total_payments || 0).toLocaleString("en-IN");
+            Number(data.total_payments || 0)
+                .toLocaleString("en-IN");
+
+
+        /*
+         * Your backend queue endpoint currently returns
+         * the queue itself.
+         *
+         * Calculate totals from the returned records.
+         */
+
+        const payments = data.queue || [];
+
+        let failedAmount = 0;
+        let expectedRecovery = 0;
+
+        payments.forEach(payment => {
+
+            failedAmount +=
+                Number(payment.amount) || 0;
+
+            expectedRecovery +=
+                Number(payment.expected_value) || 0;
+
+        });
 
 
         document.getElementById("failed-amount").textContent =
-            formatMoney(data.total_failed_amount);
+            formatMoney(failedAmount);
 
 
         document.getElementById("expected-recovery").textContent =
-            formatMoney(data.total_expected_recovered_value);
+            formatMoney(expectedRecovery);
 
 
-        // ====================================================
-        // UPDATE TABLE
-        // ====================================================
+        // ===============================
+        // DISPLAY TABLE
+        // ===============================
 
-        queueBody.innerHTML = "";
+        tableBody.innerHTML = "";
 
 
-        if (!data.queue || data.queue.length === 0) {
+        if (payments.length === 0) {
 
-            queueBody.innerHTML = `
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="7" class="loading">
                         No recovery opportunities found.
@@ -144,20 +147,22 @@ async function loadQueue() {
         }
 
 
-        data.queue.forEach(payment => {
+        payments.slice(0, 100).forEach(payment => {
 
             const row = document.createElement("tr");
+
+            row.style.cursor = "pointer";
 
 
             row.innerHTML = `
 
                 <td>
-                    ${payment.rank}
+                    ${payment.rank ?? ""}
                 </td>
 
                 <td>
                     <strong>
-                        ${payment.event_id}
+                        ${payment.event_id ?? ""}
                     </strong>
                 </td>
 
@@ -166,11 +171,16 @@ async function loadQueue() {
                 </td>
 
                 <td>
-                    ${payment.cause}
+                    ${payment.cause ?? ""}
                 </td>
 
                 <td>
-                    ${(Number(payment.recovery_probability) * 100).toFixed(1)}%
+                    ${
+                        (
+                            Number(payment.recovery_probability || 0)
+                            * 100
+                        ).toFixed(1)
+                    }%
                 </td>
 
                 <td>
@@ -186,110 +196,412 @@ async function loadQueue() {
             `;
 
 
-            queueBody.appendChild(row);
+            // Click payment → decision details
+
+            row.addEventListener("click", function () {
+
+                if (payment.event_id) {
+
+                    showDecision(payment.event_id);
+
+                }
+
+            });
+
+
+            tableBody.appendChild(row);
 
         });
 
 
-        // Update live status
-        updateSystemStatus(true);
-
     }
-
     catch (error) {
 
-        console.error("RecoverIQ API Error:", error);
+        console.error(
+            "RecoverIQ connection error:",
+            error
+        );
 
 
-        queueBody.innerHTML = `
+        tableBody.innerHTML = `
+
             <tr>
+
                 <td colspan="7" class="loading">
 
-                    Unable to connect to RecoverIQ API.
+                    <strong>
+                        Unable to connect to RecoverIQ backend.
+                    </strong>
 
-                    <br>
+                    <br><br>
 
-                    <small>
-                        Make sure the FastAPI backend is running on
-                        http://127.0.0.1:8000
-                    </small>
+                    Backend:
+                    ${API_URL}
+
+                    <br><br>
+
+                    Make sure the Render backend is running.
 
                 </td>
+
             </tr>
+
         `;
-
-
-        updateSystemStatus(false);
 
     }
 
-    finally {
+}
 
-        if (refreshButton) {
 
-            refreshButton.disabled = false;
+// ===============================
+// SHOW DECISION
+// ===============================
 
-            refreshButton.innerHTML =
-                "↻ &nbsp; Refresh";
+async function showDecision(eventId) {
+
+    console.log(
+        "Loading decision:",
+        eventId
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/decision/${encodeURIComponent(eventId)}`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Decision request failed: ${response.status}`
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Decision received:",
+            data
+        );
+
+
+        // If your HTML has these elements,
+        // populate them.
+
+        const modal =
+            document.getElementById("decision-modal");
+
+
+        if (modal) {
+
+            const title =
+                document.getElementById("modal-title");
+
+            const details =
+                document.getElementById("decision-details");
+
+            const reasoning =
+                document.getElementById("reasoning-text");
+
+
+            if (title) {
+
+                title.textContent =
+                    data.event_id;
+
+            }
+
+
+            if (details) {
+
+                details.innerHTML = `
+
+                    <div class="detail">
+                        <span>Amount</span>
+                        <strong>
+                            ${formatMoney(data.amount)}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Failure Cause</span>
+                        <strong>
+                            ${data.cause}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Recovery Probability</span>
+                        <strong>
+                            ${(data.recovery_probability * 100).toFixed(1)}%
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Expected Value</span>
+                        <strong>
+                            ${formatMoney(data.expected_value)}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Initial Action</span>
+                        <strong>
+                            ${formatAction(data.initial_action)}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Final Action</span>
+                        <strong>
+                            ${formatAction(data.final_action)}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Safe To Execute</span>
+                        <strong>
+                            ${data.safe_to_execute ? "YES" : "NO"}
+                        </strong>
+                    </div>
+
+                    <div class="detail">
+                        <span>Intervention Cost</span>
+                        <strong>
+                            ${formatMoney(data.intervention_cost)}
+                        </strong>
+                    </div>
+
+                `;
+
+            }
+
+
+            if (reasoning) {
+
+                reasoning.innerHTML = `
+
+                    <strong>
+                        ${
+                            data.reasoning?.formula ||
+                            "Expected Value = P(recover) × Amount − Intervention Cost"
+                        }
+                    </strong>
+
+                    <br><br>
+
+                    ${
+                        data.reasoning?.calculation ||
+                        ""
+                    }
+
+                    <br><br>
+
+                    Result:
+
+                    <strong>
+                        ${
+                            data.reasoning?.result ||
+                            formatMoney(data.expected_value)
+                        }
+                    </strong>
+
+                    <br><br>
+
+                    Safety:
+
+                    ${
+                        data.rules_triggered ||
+                        "Safety checks passed"
+                    }
+
+                `;
+
+            }
+
+
+            modal.classList.add("show");
+
+        }
+        else {
+
+            // Fallback if modal isn't present
+
+            alert(
+                `Payment: ${data.event_id}\n\n` +
+                `Cause: ${data.cause}\n` +
+                `Recovery Probability: ${(data.recovery_probability * 100).toFixed(1)}%\n` +
+                `Expected Value: ${formatMoney(data.expected_value)}\n` +
+                `Final Action: ${formatAction(data.final_action)}\n` +
+                `Safe: ${data.safe_to_execute ? "YES" : "NO"}`
+            );
 
         }
 
     }
+    catch (error) {
+
+        console.error(
+            "Decision error:",
+            error
+        );
+
+        alert(
+            "Unable to load decision for " +
+            eventId
+        );
+
+    }
+
 }
 
 
-// ============================================================
-// SYSTEM STATUS
-// ============================================================
+// ===============================
+// SIDEBAR NAVIGATION
+// ===============================
 
-function updateSystemStatus(online) {
+function setupNavigation() {
 
-    const liveIndicator =
-        document.querySelector(".live-indicator");
-
-    if (!liveIndicator) {
-        return;
-    }
+    const navItems =
+        document.querySelectorAll(".nav-item");
 
 
-    if (online) {
+    navItems.forEach(item => {
 
-        liveIndicator.innerHTML = `
-            <span></span>
-            LIVE
-        `;
+        item.addEventListener(
+            "click",
+            function () {
 
-        liveIndicator.classList.remove("offline");
+                navItems.forEach(nav => {
 
-    }
-    else {
+                    nav.classList.remove("active");
 
-        liveIndicator.innerHTML = `
-            <span></span>
-            OFFLINE
-        `;
+                });
 
-        liveIndicator.classList.add("offline");
 
-    }
+                this.classList.add("active");
+
+
+                const page =
+                    this.dataset.page;
+
+
+                document
+                    .querySelectorAll(".page")
+                    .forEach(section => {
+
+                        section.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                const target =
+                    document.getElementById(
+                        `page-${page}`
+                    );
+
+
+                if (target) {
+
+                    target.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
 }
 
 
-// ============================================================
+// ===============================
+// CLOSE MODAL
+// ===============================
+
+function setupModal() {
+
+    const modal =
+        document.getElementById(
+            "decision-modal"
+        );
+
+
+    const closeButton =
+        document.getElementById(
+            "close-modal"
+        );
+
+
+    if (closeButton) {
+
+        closeButton.addEventListener(
+            "click",
+            function () {
+
+                modal.classList.remove(
+                    "show"
+                );
+
+            }
+        );
+
+    }
+
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    modal.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+// ===============================
 // REFRESH BUTTON
-// ============================================================
+// ===============================
 
-const refreshButton =
-    document.getElementById("refresh-btn");
+function setupRefresh() {
+
+    const button =
+        document.getElementById(
+            "refresh-btn"
+        );
 
 
-if (refreshButton) {
+    if (!button) return;
 
-    refreshButton.addEventListener(
+
+    button.addEventListener(
         "click",
         function () {
-
-            console.log("Refreshing RecoverIQ queue...");
 
             loadQueue();
 
@@ -299,189 +611,19 @@ if (refreshButton) {
 }
 
 
-// ============================================================
-// SIDEBAR NAVIGATION
-// ============================================================
-
-const navigationItems =
-    document.querySelectorAll(".nav-item");
-
-
-navigationItems.forEach(item => {
-
-    item.addEventListener("click", function () {
-
-        // Remove active state
-        navigationItems.forEach(nav => {
-            nav.classList.remove("active");
-        });
-
-
-        // Add active state
-        this.classList.add("active");
-
-
-        const section =
-            this.dataset.section;
-
-
-        console.log(
-            "RecoverIQ navigation:",
-            section
-        );
-
-
-        // ====================================================
-        // NAVIGATION BEHAVIOR
-        // ====================================================
-
-        if (section === "queue") {
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        }
-
-
-        else if (section === "decision") {
-
-            const insight =
-                document.querySelector(".insight-card");
-
-            if (insight) {
-
-                insight.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-            }
-
-            showNotification(
-                "Decision Engine",
-                "RecoverIQ is using AI-based recovery decisions."
-            );
-
-        }
-
-
-        else if (section === "analytics") {
-
-            const stats =
-                document.querySelector(".stats-grid");
-
-            if (stats) {
-
-                stats.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-            }
-
-            showNotification(
-                "Recovery Analytics",
-                "Analytics are calculated from the recovery queue."
-            );
-
-        }
-
-
-        else if (section === "failure") {
-
-            const queue =
-                document.querySelector(".queue-section");
-
-            if (queue) {
-
-                queue.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
-                });
-
-            }
-
-            showNotification(
-                "Failure Log",
-                "Payment failures are classified by the diagnosis engine."
-            );
-
-        }
-
-    });
-
-});
-
-
-// ============================================================
-// NOTIFICATION
-// ============================================================
-
-function showNotification(title, message) {
-
-    // Remove existing notification
-    const old =
-        document.querySelector(".recoveriq-notification");
-
-    if (old) {
-        old.remove();
-    }
-
-
-    const notification =
-        document.createElement("div");
-
-
-    notification.className =
-        "recoveriq-notification";
-
-
-    notification.innerHTML = `
-        <strong>${title}</strong>
-        <span>${message}</span>
-    `;
-
-
-    document.body.appendChild(notification);
-
-
-    // Animate in
-    setTimeout(() => {
-
-        notification.classList.add("show");
-
-    }, 10);
-
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-
-        notification.classList.remove("show");
-
-        setTimeout(() => {
-
-            notification.remove();
-
-        }, 300);
-
-    }, 3000);
-
-}
-
-
-// ============================================================
-// INITIAL LOAD
-// ============================================================
+// ===============================
+// START APPLICATION
+// ===============================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        console.log(
-            "RecoverIQ frontend initialized."
-        );
+        setupNavigation();
+
+        setupModal();
+
+        setupRefresh();
 
         loadQueue();
 
